@@ -1,0 +1,4 @@
+#!/Users/sangit/Downloads/django-react-boilerplate-master/ibslreact/bin/python3
+
+import dodgy.run
+dodgy.run.run()

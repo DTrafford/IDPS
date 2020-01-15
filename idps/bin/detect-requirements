@@ -1,0 +1,3 @@
+#!/Users/davidtrafford/Documents/School/Cyber/702/idps/idps/bin/python3
+from requirements_detector.run import run
+run()
