@@ -5,7 +5,7 @@ import Nav2 from '../components/Nav/Nav2.js';
 import Container from './ResuableContainer';
 import Alerts from '../components/Alerts/Alerts';
 import Footer from '../components/Footer/Footer';
-const client = new W3CWebSocket('ws://localhost:8000/ws/ibsl/');
+const client = new W3CWebSocket('ws://localhost:8000/ws/idps/');
 
 import PacketsTable from '../components/MaterialUI/PacketsTable'
 

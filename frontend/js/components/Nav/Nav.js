@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Nav.css'
-// const client = new W3CWebSocket('ws://localhost:8000/ws/ibsl/');
+// const client = new W3CWebSocket('ws://localhost:8000/ws/idps/');
 
 export default class Nav extends Component {
   render() {

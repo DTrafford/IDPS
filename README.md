@@ -9,8 +9,8 @@ npm run start
 
 then in another terminal,
 
-python -m venv ibslenv // creating venv
-source ibslenv/bin/activate
+python -m venv idpsenv // creating venv
+source idpsenv/bin/activate
 pip install pip-tools
 pip install -r requirements.txt && pip install -r dev-requirements.txt
 
@@ -20,7 +20,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 then to run python
-source ibslenv/bin/activate
+source idpsenv/bin/activate
 python3 manage.py runserver
 
 then in another terminal,

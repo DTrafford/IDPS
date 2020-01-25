@@ -1,3 +1,0 @@
-#!/Users/sangit/Downloads/django-react-boilerplate-master/ibslreact/bin/python3
-from requirements_detector.run import run
-run()

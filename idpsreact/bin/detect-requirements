@@ -1,0 +1,3 @@
+#!/Users/sangit/Downloads/django-react-boilerplate-master/idpsreact/bin/python3
+from requirements_detector.run import run
+run()

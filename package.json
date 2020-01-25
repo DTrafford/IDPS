@@ -1,8 +1,8 @@
 {
-  "name": "ibsl-frontend",
+  "name": "idps-frontend",
   "version": "0.0.1",
   "private": true,
-  "description": "ibsl frontend.",
+  "description": "idps frontend.",
   "main": "index.js",
   "prettier": "eslint-config-vinta/prettier",
   "scripts": {

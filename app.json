@@ -1,6 +1,6 @@
 {
-  "name": "ibsl",
-  "description": "IBSL Heroku app.",
+  "name": "idps",
+  "description": "idps Heroku app.",
   "env": {
     "ALLOWED_HOSTS": {
       "description": "Django ALLOWED_HOSTS setting, e.g.: .appname.herokuapp.com"
@@ -19,7 +19,7 @@
     },
     "DJANGO_SETTINGS_MODULE": {
       "description": "Django settings Python import path",
-      "value": "ibsl.settings.production"
+      "value": "idps.settings.production"
     },
     "SECRET_KEY": {
       "description": "Django SECRET_KEY setting",
