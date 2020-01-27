@@ -64,14 +64,16 @@ class ids:
 
     __THRESH = 1000
 
+    now = datetime.now()
+    current_file = 'captured_pkts' + str(now) + '.pcap'
     def sniffPackets(self, consumer):
         print('IN SNIFF PACKETS')
         def nestedSniff(packet):
-            newPacket = {
-            }
+            newPacket = {}
             # print(packet.summary())
             print("running capturing thread")
-
+            """ THIS wrpcap writes the pcap file, uncomment it if you wanna use it """
+            # wrpcap(ids.current_file, packet, append = True)
             if packet.haslayer(ICMP):
                 consumer.send(text_data=json.dumps({
                     'message': "IN ICMP"

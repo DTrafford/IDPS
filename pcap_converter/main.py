@@ -16,7 +16,7 @@ for root, dirs, files, in os.walk(startdir):
             output_filename = os.path.join(output_path, os.path.splitext(name)[0] + '.csv')
 
             # cmd = 'tshark -r {} -T fields -e frame.number -e frame.time_relative -e wlan.sa -e wlan.da -e wlan.ta -e wlan.ra -e frame.time_delta_displayed -e frame.len -E header=y -E separator=, -E quote=d -E occurrence=f > {}'
-            cmd = 'tshark -r {} -n -T fields -E separator=, -e frame.time -e ip.src -e ip.dst -e ip.proto -e tcp.port > {}'
+            cmd = 'tshark -r {} -T fields -E separator=, -e frame.time -e ip.src -e ip.dst -e ip.proto -e tcp.port > {}'
             final_cmd = cmd.format(input_filename, output_filename)
 
             print(final_cmd)
