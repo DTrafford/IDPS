@@ -1,24 +1,34 @@
 class Packet(object):
 
-    def __init__(self, srcIP, srcCity, srcCountry, srcContinent, dstIP, dstCity, dstCountry, dstContinent, time):
+    def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags):
+        self.pcktNumber = pcktNumber
         self.srcIP = srcIP
-        self.srcCity = srcCity
-        self.srcCountry = srcCountry
-        self.srcContinent = srcContinent
         self.dstIP = dstIP
-        self.dstCity = dstCity
-        self.dstCountry = dstCountry
-        self.dstContinent = dstContinent
-        self.srcPort = ''
-        self.dstPort = ''
-        self.time = time
-
-    def _addPorts(self, srcPort, dstPort):
         self.srcPort = srcPort
         self.dstPort = dstPort
+        self.time = time
+        self.protocol = proto
+        self.flags = flags
+        # self.srcCity = srcCity
+        # self.srcCountry = srcCountry
+        # self.srcContinent = srcContinent
+        # self.dstCity = dstCity
+        # self.dstCountry = dstCountry
+        # self.dstContinent = dstContinent
+
+    # def _addPorts(self, srcPort, dstPort):
+    #     self.srcPort = srcPort
+    #     self.dstPort = dstPort
+
+    def to_dict(self):
+        return {
+            'num': self.pcktNumber,
+            'srcIP': self.srcIP
+        }
 
     def __str__(self):
-        return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
+        return ("IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, [%s]" % (self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags))
+        # return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
         # print("IP Packet: %s (%s) ==>  %s (%s)" % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry), end=' ')
 
 
