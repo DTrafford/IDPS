@@ -2,12 +2,12 @@ install python 3 and pip 3
 
 then in the main folder /
 
-npm install
+<!-- npm install
 
 then to run react
 npm run start
 
-then in another terminal,
+then in another terminal, -->
 
 python -m venv idpsenv // creating venv
 source idpsenv/bin/activate

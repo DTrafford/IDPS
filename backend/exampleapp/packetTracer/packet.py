@@ -1,6 +1,6 @@
 class Packet(object):
 
-    def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags):
+    def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags, seq):
         self.pcktNumber = pcktNumber
         self.srcIP = srcIP
         self.dstIP = dstIP
@@ -9,6 +9,7 @@ class Packet(object):
         self.time = time
         self.protocol = proto
         self.flags = flags
+        self.seq = seq
         # self.srcCity = srcCity
         # self.srcCountry = srcCountry
         # self.srcContinent = srcContinent
@@ -27,7 +28,7 @@ class Packet(object):
         }
 
     def __str__(self):
-        return ("IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, [%s]" % (self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags))
+        return ("(%d) IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, %s" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags))
         # return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
         # print("IP Packet: %s (%s) ==>  %s (%s)" % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry), end=' ')
 

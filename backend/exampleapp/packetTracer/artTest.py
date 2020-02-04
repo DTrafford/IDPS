@@ -45,9 +45,6 @@ class ids:
         newPacket = None
         global pckNum
         pckNum+=1
-        srcMAC = packet[Ether].src
-        dstMAC = packet[Ether].dst
-        print(srcMAC)
         # print(packet)
         # df.append(packet)
         # dh.head()
@@ -77,30 +74,26 @@ class ids:
             }
             pckt_src = packet[IP].src
             pckt_dst = packet[IP].dst
+            # print('PROTOCOL = ', packet[IP].proto)
+            # print('SRC PORT = ', packet.sport)
+            # print('DST PORT = ', packet.dport)
             src_port = ''
             dst_port = ''
             protocol = ''
-            seq = None
             flags = []
-            load = ''
-
             if TCP in packet:
                 src_port = packet[TCP].sport
                 dst_port = packet[TCP].dport
-                seq = packet[TCP].seq
+                # print('FLAGS = ', packet[TCP].flags)
                 for flag in packet[TCP].flags:
                     flags.append(flagsTCP[flag])
-
+                    print('FLAGS = ', flags)
             if UDP in packet:
                 src_port = packet[UDP].sport
                 dst_port = packet[UDP].dport
-
             if packet[IP].proto in protocols:
+                print(protocols[packet[IP].proto])
                 protocol = protocols[packet[IP].proto]
-
-            if Raw in packet:
-                load = packet[IP].load
-                print('LOAD = ', load)
             """ To get the location of the source and destination ip addresses """
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
@@ -123,10 +116,10 @@ class ids:
             #     dstCity = result['city']
 
             time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
+            newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags)
 
 
-        # print('TEST 1  = ', newPacket)
+        print(newPacket)
         return newPacket
 
     # def detect_TCPflood(self, packet):
