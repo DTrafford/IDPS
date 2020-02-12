@@ -1,5 +1,8 @@
-import sys
-sys.path.append('../')
+import sys, os
+# sys.path.append('../')
+
+import glob
+
 
 from scapy.all import *
 from datetime import datetime
@@ -7,13 +10,29 @@ import urllib.request
 import requests
 import json
 import pandas as pd
+from parsuricata import parse_rules
+import RuleFileReader
+from collections import OrderedDict
 from packet import Packet
 
 import time
 from datetime import datetime
 
+# print("This file full path (following symlinks)")
+# path = os.path.realpath('./backend/exampleapp/packetTracer/rules/*.rules')
+# print(path + "\n")
+rules = []
+basepath = '/Users/davidtrafford/Documents/School/IDPS/idps/backend/exampleapp/packetTracer/rulesTest/'
+print('OS .JOIN = ', os.path.join(basepath))
+for entry in os.listdir(basepath):
+    rules.append(RuleFileReader.read(basepath + entry));
+    # rules.append(parse_rules(entry))
+
+# rules.append(RuleFileReader.read(filename));
+
 pckNum = 0
-df = pd.DataFrame()
+# df = pd.DataFrame()
+packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
 class ids:
     __flagsTCP = {
@@ -47,7 +66,7 @@ class ids:
         pckNum+=1
         srcMAC = packet[Ether].src
         dstMAC = packet[Ether].dst
-        print(srcMAC)
+        # print(srcMAC)
         # print(packet)
         # df.append(packet)
         # dh.head()
@@ -61,9 +80,11 @@ class ids:
                 17: 'UDP',
                 41: 'IPv6',
                 56: 'TLSP',
+                80: 'HTTP',
                 84: 'TTP',
                 88: 'EIGRP',
                 143: 'ETHERNET',
+                443: 'HTTPS'
             }
             flagsTCP = {
                 'F': 'FIN',
@@ -80,7 +101,7 @@ class ids:
             src_port = ''
             dst_port = ''
             protocol = ''
-            seq = None
+            seq = 0
             flags = []
             load = ''
 
@@ -88,6 +109,11 @@ class ids:
                 src_port = packet[TCP].sport
                 dst_port = packet[TCP].dport
                 seq = packet[TCP].seq
+                ack = packet[TCP].ack if packet[TCP].ack else 0
+                # print('({}) TCP PAYLOAD = {}'.format(pckNum, packet[TCP].payload))
+                # print('({}) TCP PAYLOAD LENGTH = {}'.format(pckNum, len(packet[TCP].payload)))
+                # ack = packet[TCP].ack
+                # print(ack)
                 for flag in packet[TCP].flags:
                     flags.append(flagsTCP[flag])
 
@@ -95,12 +121,15 @@ class ids:
                 src_port = packet[UDP].sport
                 dst_port = packet[UDP].dport
 
-            if packet[IP].proto in protocols:
-                protocol = protocols[packet[IP].proto]
+            protocol = protocols[packet[IP].proto] if packet[IP].proto in protocols else ''
+            # if packet[IP].proto in protocols:
+            #     protocol = protocols[packet[IP].proto]
 
-            if Raw in packet:
-                load = packet[IP].load
-                print('LOAD = ', load)
+            load = packet[IP].load if Raw in packet else ''
+            # if Raw in packet:
+            #     load = packet[IP].load
+                
+                # print('LOAD = ', load)
             """ To get the location of the source and destination ip addresses """
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
@@ -124,6 +153,21 @@ class ids:
 
             time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
+
+            packet_list[pckNum] = (newPacket)
+            # print('PACKET DETAILS = ', packet_list[pckNum])
+            # if 'SYN' and 'ACK' in newPacket.flags:
+            #     print('SYN & ACK PACKET')
+            #     for i in range(pckNum, 0, -1):
+            #         print(i)
+
+            # for obj in packet_list.values():
+            #    if obj.srcIP == newPacket.srcIP:
+            #        print('matched')
+            # print('PACKET LIST = ', packet_list)
+            # df.add(dfPacket)
+            # print(df.head())
+
 
 
         # print('TEST 1  = ', newPacket)
