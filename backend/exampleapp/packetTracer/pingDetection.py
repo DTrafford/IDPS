@@ -1,3 +1,4 @@
-def addPacketToPingDF(df, packet):
-    if df.size > 200:
+def addPacketToPingList:(list, packet):
+    if list.size > 200:
+        list.
         

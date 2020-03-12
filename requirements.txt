@@ -18,5 +18,5 @@ redis
 asgiref
 channels_redis
 channels
-daphne
+daphne==2.3
 scapy
