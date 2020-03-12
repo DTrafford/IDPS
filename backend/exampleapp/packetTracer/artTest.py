@@ -5,7 +5,7 @@ import glob
 from threading import Thread
 import logging
 
-import self as self
+
 from scapy.all import *
 from datetime import datetime
 import urllib.request
@@ -31,26 +31,29 @@ pckNum = 0
 packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
 
-global ruleList
+# ruleList = []
 
-basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
+# import pathlib
+# basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
+# print('BASE PATH = ' + str(basepath))
 
-for entry in os.listdir(basepath):
-    # ruleList.append(RuleFileReader.read(basepath + entry));
-    # ruleList.append(parse_rules(entry))
-    # ruleList.append(RuleFileReader.read(filename));
-    ruleList, errorCount = RuleFileReader.read(basepath + entry);
-    print("\n\nRuleFiles = ", os.path.join(basepath))
-    print("\tFinished reading rule file: " + entry)
+# for entry in os.listdir(basepath):
+#     # ruleList.append(RuleFileReader.read(basepath + entry));
+#     # ruleList.append(parse_rules(entry))
+#     # ruleList.append(RuleFileReader.read(filename));
+#     ruleList, errorCount = RuleFileReader.read(basepath + entry);
+#     print("\n\nRuleFiles = ", os.path.join(basepath))
+#     print("\tFinished reading rule file: " + entry)
 
-    if (errorCount == 0):
-        print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
-    else:
-        print("\t" + str(len(ruleList)) + " rules have been correctly read:")
-        print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
-        for x in ruleList:
-            print(x)
+#     if (errorCount == 0):
+#         print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
+#     else:
+#         print("\t" + str(len(ruleList)) + " rules have been correctly read:")
+#         print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
+#         for x in ruleList:
+#             print(x)
 
+# print('RULE LIST = ', ruleList)
 class ids:
     __flagsTCP = {
         'F': 'FIN',
@@ -77,8 +80,32 @@ class ids:
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
 
+    ruleList = []
+
+    import pathlib
+    basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
+    print('BASE PATH = ' + str(basepath))
+
+    for entry in os.listdir(basepath):
+        # ruleList.append(RuleFileReader.read(basepath + entry));
+        # ruleList.append(parse_rules(entry))
+        # ruleList.append(RuleFileReader.read(filename));
+        ruleList, errorCount = RuleFileReader.read(basepath + entry);
+        print("\n\nRuleFiles = ", os.path.join(basepath))
+        print("\tFinished reading rule file: " + entry)
+
+        if (errorCount == 0):
+            print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
+        else:
+            print("\t" + str(len(ruleList)) + " rules have been correctly read:")
+            print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
+            for x in ruleList:
+                print(x)
+    print('RULE LIST = ', ruleList)
 
     def sniffPackets(self, packet):
+        # global ruleList
+        print("RULE LIST INSIDE SNIFF PACKETS = ", ids.ruleList)
         newPacket = None
         global pckNum
         pckNum += 1
@@ -180,9 +207,10 @@ class ids:
 
 
 
-            for xx in ruleList:
+            for rule in ids.ruleList:
+                print('RULE = ' + str(rule))
                 # Check all rules
-                matched = Rule.match(packet)
+                matched = rule.match(packet)
                 if (matched):
                     print("Pre Matched Rule" + matched)
                     logMessage = Rule.getMatchedMessage(newPacket)
@@ -230,7 +258,8 @@ if __name__ == '__main__':
 
     print("==Custom packet sniffer==")
     ruleList = list()
-    sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
+    sniffer = AsyncSniffer(iface="en0", prn=ids().sniffPackets)
+    # sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
     #sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids.inPacket,filter="", store=0, stop_filter=self.stopfilter)
     sniffer.start()
 

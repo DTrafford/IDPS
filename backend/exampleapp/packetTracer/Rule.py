@@ -102,6 +102,7 @@ class Rule:
         return self.string
 
     def match(self, pkt):
+        print("IN MACTH FUNCTION IN RULE.PY")
         """
         Returns True if and only if the rule is matched by given packet,
         i.e. if every part of the rule is met by the packet.

@@ -22,10 +22,13 @@ from datetime import datetime
 # path = os.path.realpath('./backend/exampleapp/packetTracer/rules/*.rules')
 # print(path + "\n")
 rules = []
-basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
-print('OS .JOIN = ', os.path.join(basepath))
+# basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
+# print('OS .JOIN = ', os.path.join(basepath))
+import pathlib
+basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
+print('BASE PATH = ' + str(basepath))
 for entry in os.listdir(basepath):
-    rules.append(RuleFileReader.read(basepath + entry));
+    rules.append(RuleFileReader.read(str(basepath) + entry));
     # rules.append(parse_rules(entry))
 
 print('RULES = ', rules)
