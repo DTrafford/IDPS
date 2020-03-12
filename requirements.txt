@@ -1,3 +1,7 @@
+parsuricata
+requests
+pandas
+decouple
 django
 celery[redis]
 django-model-utils

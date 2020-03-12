@@ -22,7 +22,7 @@ from datetime import datetime
 # path = os.path.realpath('./backend/exampleapp/packetTracer/rules/*.rules')
 # print(path + "\n")
 rules = []
-basepath = '/Users/davidtrafford/Documents/School/IDPS/idps/backend/exampleapp/packetTracer/rulesTest/'
+basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
 print('OS .JOIN = ', os.path.join(basepath))
 for entry in os.listdir(basepath):
     rules.append(RuleFileReader.read(basepath + entry));
@@ -56,7 +56,7 @@ class ids:
     __ip_cnt_TCP = {}  # ip address requests counter
 
     __THRESH = 1000
-    
+
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
 
@@ -71,7 +71,7 @@ class ids:
         # df.append(packet)
         # dh.head()
         # print(packet.sprintf("Source IP: %IP.src% () ==> Dest IP: %IP.dst% (), Proto: %IP.proto%, Flags: %TCP.flags%").upper())
-            
+
         if packet.haslayer(IP):
             protocols = {
                 1: 'ICMP',
@@ -128,14 +128,14 @@ class ids:
             load = packet[IP].load if Raw in packet else ''
             # if Raw in packet:
             #     load = packet[IP].load
-                
+
                 # print('LOAD = ', load)
             """ To get the location of the source and destination ip addresses """
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
             # r = requests.get(src_location_api)
             # result = r.json()
-            
+
             # if 'city' in result:
             #     srcCountry = result['country_name']
             #     srcCountryFlag = result['country_flag']
@@ -190,7 +190,7 @@ class ids:
     #                 src = stream.split(':')[0]
     #                 dst = stream.split(':')[1]
     #                 print("Possible Flooding Attack from %s --> %s" % (src, dst))
-    
+
 if __name__ == '__main__':
     print("custom packet sniffer ")
     # sniff(filter="ip")

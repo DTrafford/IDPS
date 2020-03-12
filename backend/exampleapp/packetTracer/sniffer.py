@@ -15,7 +15,7 @@ apikey = '79aa5e1eed184359a87119a5a9dace18'
 class Packet(object):
 
     def __init__(self, srcIP, srcCity, srcCountry, srcContinent, dstIP, dstCity, dstCountry, dstContinent, time):
-        self.srcIP = srcIP
+        self. srcIP = srcIP
         self.srcCity = srcCity
         self.srcCountry = srcCountry
         self.srcContinent = srcContinent
@@ -26,10 +26,22 @@ class Packet(object):
         self.srcPort = ''
         self.dstPort = ''
         self.time = time
+        #self.ruleList = ruleList
 
     def _addPorts(self, srcPort, dstPort):
         self.srcPort = srcPort
         self.dstPort = dstPort
+
+    #def inPacket(self, pkt):
+    #    for rule in self.ruleList:
+    #        # Check all rules
+    #        # print "checking rule"
+    #        matched = rule.match(pkt)
+    #        if (matched):
+    #            logMessage = rule.getMatchedMessage(pkt)
+    #            logging.warning(logMessage)
+    #
+    #            print(rule.getMatchedPrintMessage(pkt))
 
     def __str__(self):
         return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
@@ -73,7 +85,7 @@ class ids:
             # print(packet.summary())
             print("running capturing thread")
             """ THIS wrpcap writes the pcap file, uncomment it if you wanna use it """
-            # wrpcap(ids.current_file, packet, append = True)
+            #wrpcap(ids.current_file, packet, append = True)
             if packet.haslayer(ICMP):
                 consumer.send(text_data=json.dumps({
                     'message': "IN ICMP"

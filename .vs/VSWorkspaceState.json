@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\backend",
+    "\\backend\\exampleapp",
+    "\\backend\\exampleapp\\packetTracer",
+    "\\backend\\exampleapp\\packetTracer\\rules",
+    "\\backend\\idps"
+  ],
+  "SelectedNode": "\\backend\\exampleapp\\packetTracer\\artTest.py",
+  "PreviewInSolutionExplorer": false
+}

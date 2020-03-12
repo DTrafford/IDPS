@@ -22,5 +22,5 @@ def read(filename):
                 ruleErrorCount += 1
                 print(err)
 
-    return l
-    # return l, ruleErrorCount
+    #return l
+    return l, ruleErrorCount

@@ -19,8 +19,8 @@ class Rule:
         str = str.strip()
         strs = str.split(' ')
 
-        if (len(strs) >= 7):
-
+        if len(strs) >= 7:
+            print("Art ", strs[0]," ",strs[1]," ",strs[2]," ",strs[3]," ",strs[4]," ",strs[5]," ",strs[6]," ",strs[7]," ")
             self.action = action(strs[0])
 
             # protocol
@@ -106,11 +106,11 @@ class Rule:
         Returns True if and only if the rule is matched by given packet,
         i.e. if every part of the rule is met by the packet.
         """
-        # check protocol
+        #check protocol
+        #print("Matched function: " + self + pkt)
         if (not self.checkProtocol(pkt)):
             return False
-
-        # check IP source and destination
+        #check IP source and destination
         if (not self.checkIps(pkt)):
             return False
 

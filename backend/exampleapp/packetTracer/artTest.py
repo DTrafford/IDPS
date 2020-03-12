@@ -1,20 +1,56 @@
-import sys
-sys.path.append('../')
+import sys, os
+# sys.path.append('../')
 
+import glob
+from threading import Thread
+import logging
+
+import self as self
 from scapy.all import *
 from datetime import datetime
 import urllib.request
 import requests
 import json
 import pandas as pd
+from parsuricata import parse_rules
+import RuleFileReader
+from collections import OrderedDict
 from packet import Packet
+from Rule import Rule
 
 import time
 from datetime import datetime
 
+# print("This file full path (following symlinks)")
+# path = os.path.realpath('./backend/exampleapp/packetTracer/rules/*.rules')
+# print(path + "\n")
+from scapy.layers.inet import UDP
+
 pckNum = 0
-df = pd.DataFrame()
+# df = pd.DataFrame()
+packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
+
+global ruleList
+
+basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
+
+for entry in os.listdir(basepath):
+    # ruleList.append(RuleFileReader.read(basepath + entry));
+    # ruleList.append(parse_rules(entry))
+    # ruleList.append(RuleFileReader.read(filename));
+    ruleList, errorCount = RuleFileReader.read(basepath + entry);
+    print("\n\nRuleFiles = ", os.path.join(basepath))
+    print("\tFinished reading rule file: " + entry)
+
+    if (errorCount == 0):
+        print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
+    else:
+        print("\t" + str(len(ruleList)) + " rules have been correctly read:")
+        print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
+        for x in ruleList:
+            print(x)
+
 class ids:
     __flagsTCP = {
         'F': 'FIN',
@@ -37,14 +73,15 @@ class ids:
     __ip_cnt_TCP = {}  # ip address requests counter
 
     __THRESH = 1000
-    
+
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
+
 
     def sniffPackets(self, packet):
         newPacket = None
         global pckNum
-        pckNum+=1
+        pckNum += 1
         srcMAC = packet[Ether].src
         dstMAC = packet[Ether].dst
         # print(srcMAC)
@@ -52,7 +89,7 @@ class ids:
         # df.append(packet)
         # dh.head()
         # print(packet.sprintf("Source IP: %IP.src% () ==> Dest IP: %IP.dst% (), Proto: %IP.proto%, Flags: %TCP.flags%").upper())
-            
+
         if packet.haslayer(IP):
             protocols = {
                 1: 'ICMP',
@@ -92,7 +129,7 @@ class ids:
                 seq = packet[TCP].seq
                 ack = packet[TCP].ack if packet[TCP].ack else 0
                 # print('({}) TCP PAYLOAD = {}'.format(pckNum, packet[TCP].payload))
-                print('({}) TCP PAYLOAD LENGTH = {}'.format(pckNum, len(packet[TCP].payload)))
+                # print('({}) TCP PAYLOAD LENGTH = {}'.format(pckNum, len(packet[TCP].payload)))
                 # ack = packet[TCP].ack
                 # print(ack)
                 for flag in packet[TCP].flags:
@@ -108,15 +145,15 @@ class ids:
 
             load = packet[IP].load if Raw in packet else ''
             # if Raw in packet:
-            #     load = packet[IP].load
-                
-                # print('LOAD = ', load)
+            # print('LOAD = ', load)
             """ To get the location of the source and destination ip addresses """
+            #     load = packet[IP].load
+
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
             # r = requests.get(src_location_api)
             # result = r.json()
-            
+
             # if 'city' in result:
             #     srcCountry = result['country_name']
             #     srcCountryFlag = result['country_flag']
@@ -134,7 +171,37 @@ class ids:
 
             time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
+            packet_list[pckNum] = newPacket
 
+            #for Packet in ruleList:
+            #   print("RulesList: " + Packet)
+            print ("Packet Checking within Rule")
+
+
+
+
+            for xx in ruleList:
+                # Check all rules
+                matched = Rule.match(packet)
+                if (matched):
+                    print("Pre Matched Rule" + matched)
+                    logMessage = Rule.getMatchedMessage(newPacket)
+                    logging.warning(logMessage)
+                    print(Rule.getMatchedPrintMessage(newPacket))
+
+
+                    # print('PACKET DETAILS = ', packet_list[pckNum])
+            # if 'SYN' and 'ACK' in newPacket.flags:
+            #     print('SYN & ACK PACKET')
+            #     for i in range(pckNum, 0, -1):
+            #         print(i)
+
+            # for obj in packet_list.values():
+            #    if obj.srcIP == newPacket.srcIP:
+            #        print('matched')
+            # print('PACKET LIST = ', packet_list)
+            # df.add(dfPacket)
+            # print(df.head())
 
         # print('TEST 1  = ', newPacket)
         return newPacket
@@ -156,17 +223,19 @@ class ids:
     #                 src = stream.split(':')[0]
     #                 dst = stream.split(':')[1]
     #                 print("Possible Flooding Attack from %s --> %s" % (src, dst))
-    
+
+
 if __name__ == '__main__':
-    print("custom packet sniffer ")
-    # sniff(filter="ip")
-    # sniff(iface="en0", prn=ids().sniffPackets)
-    sniffer = AsyncSniffer(iface="en0", prn=ids().sniffPackets)
+
+
+    print("==Custom packet sniffer==")
+    ruleList = list()
+    sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
+    #sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids.inPacket,filter="", store=0, stop_filter=self.stopfilter)
     sniffer.start()
+
+    #print("__________________________________________________________________________________________________________")
+    #print("     |        Src and Dest IP         |         Time:       | Protocol |      Port     |     Flags        | Sequence")
     time.sleep(5)
-    print("Stopping sniffer")
+    print("\n\n==Stopping custom sniffer==")
     sniffer.stop()
-
-
-
-

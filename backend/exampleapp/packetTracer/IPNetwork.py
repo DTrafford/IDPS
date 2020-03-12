@@ -24,10 +24,8 @@ class IPNetwork:
 
     def contains(self, ip):
         """Check if input ip is in the IPNetwork, return True iff yes."""
-
         return (ip in self.ipn)
 
     def __repr__(self):
         """String representation of the IPNetwork"""
-
         return self.ipn.__repr__()
