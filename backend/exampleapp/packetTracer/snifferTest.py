@@ -28,6 +28,7 @@ for entry in os.listdir(basepath):
     rules.append(RuleFileReader.read(basepath + entry));
     # rules.append(parse_rules(entry))
 
+print('RULES = ', rules)
 # rules.append(RuleFileReader.read(filename));
 
 pckNum = 0
@@ -59,7 +60,7 @@ class ids:
 
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
-
+    
     def sniffPackets(self, packet):
         newPacket = None
         global pckNum
