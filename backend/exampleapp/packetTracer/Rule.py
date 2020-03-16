@@ -20,7 +20,7 @@ class Rule:
         strs = str.split(' ')
 
         if len(strs) >= 7:
-            print("Art ", strs[0]," ",strs[1]," ",strs[2]," ",strs[3]," ",strs[4]," ",strs[5]," ",strs[6]," ",strs[7]," ")
+            #print("Art ", strs[0]," ",strs[1]," ",strs[2]," ",strs[3]," ",strs[4]," ",strs[5]," ",strs[6]," ",strs[7]," ")
             self.action = action(strs[0])
 
             # protocol
@@ -102,7 +102,7 @@ class Rule:
         return self.string
 
     def match(self, pkt):
-        print("IN MACTH FUNCTION IN RULE.PY")
+        #print("IN MACTH FUNCTION IN RULE.PY")
         """
         Returns True if and only if the rule is matched by given packet,
         i.e. if every part of the rule is met by the packet.
@@ -122,7 +122,6 @@ class Rule:
         # check options
         if (not self.checkOptions(pkt)):
             return False
-
         # otherwise the rule is met
         return True
 
@@ -148,8 +147,8 @@ class Rule:
         else:
             srcIp = pkt[IP].src
             dstIp = pkt[IP].dst
-            ipSrc = ip_address(unicode(srcIp))
-            ipDst = ip_address(unicode(dstIp))
+            ipSrc = ip_address(str(srcIp))
+            ipDst = ip_address(str(dstIp))
             if (self.srcIps.contains(ipSrc) and self.dstIps.contains(ipDst)):
                 # ipSrc and ipDst match rule's source and destination ips
                 f = True

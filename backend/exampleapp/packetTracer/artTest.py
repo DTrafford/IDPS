@@ -5,7 +5,7 @@ import glob
 from threading import Thread
 import logging
 
-
+from IPython.core.magic_arguments import magic_arguments
 from scapy.all import *
 from datetime import datetime
 import urllib.request
@@ -83,7 +83,7 @@ class ids:
     ruleList = []
 
     import pathlib
-    basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
+    basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
     print('BASE PATH = ' + str(basepath))
 
     for entry in os.listdir(basepath):
@@ -99,13 +99,11 @@ class ids:
         else:
             print("\t" + str(len(ruleList)) + " rules have been correctly read:")
             print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
-            for x in ruleList:
-                print(x)
-    print('RULE LIST = ', ruleList)
+        print('RULE LIST = ', ruleList , "\n\n")
 
     def sniffPackets(self, packet):
         # global ruleList
-        print("RULE LIST INSIDE SNIFF PACKETS = ", ids.ruleList)
+        #print("RULE LIST INSIDE SNIFF PACKETS = ", ids.ruleList)
         newPacket = None
         global pckNum
         pckNum += 1
@@ -200,22 +198,17 @@ class ids:
             newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
             packet_list[pckNum] = newPacket
 
-            #for Packet in ruleList:
-            #   print("RulesList: " + Packet)
-            print ("Packet Checking within Rule")
-
-
-
 
             for rule in ids.ruleList:
-                print('RULE = ' + str(rule))
                 # Check all rules
                 matched = rule.match(packet)
+                print('RULE = ' + str(rule) + "\n\n")
                 if (matched):
-                    print("Pre Matched Rule" + matched)
-                    logMessage = Rule.getMatchedMessage(newPacket)
+                    print ("Bool? = " + str(matched))
+                    print("Matched Rule: " + str(matched))
+                    logMessage = rule.getMatchedMessage(packet)
                     logging.warning(logMessage)
-                    print(Rule.getMatchedPrintMessage(newPacket))
+                    print(rule.getMatchedPrintMessage(packet) + "\n\n========================================================")
 
 
                     # print('PACKET DETAILS = ', packet_list[pckNum])
@@ -258,7 +251,7 @@ if __name__ == '__main__':
 
     print("==Custom packet sniffer==")
     ruleList = list()
-    sniffer = AsyncSniffer(iface="en0", prn=ids().sniffPackets)
+    sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
     # sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
     #sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids.inPacket,filter="", store=0, stop_filter=self.stopfilter)
     sniffer.start()
