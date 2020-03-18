@@ -1,6 +1,6 @@
 class Packet(object):
 
-    def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags, seq):
+    def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags, seq, alerts):
         self.pcktNumber = pcktNumber
         self.srcIP = srcIP
         self.dstIP = dstIP
@@ -10,6 +10,7 @@ class Packet(object):
         self.protocol = proto
         self.flags = flags
         self.seq = seq
+        self.alerts = alerts
         # self.srcCity = srcCity
         # self.srcCountry = srcCountry
         # self.srcContinent = srcContinent
@@ -28,7 +29,7 @@ class Packet(object):
         }
 
     def __str__(self):
-        return ("(%d) IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, %s ||| SEQUENCE  = %d" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.seq))
+        return ("(%d) IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, %s ||| ALERTS  = %s" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.alerts))
 
         #return ("'{0: <5}.format(%d)' | %s ==> %s | %s | %s | %s --> %s | %s | %d" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.seq))
 
