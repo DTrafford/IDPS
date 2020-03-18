@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'common',
     'users',
     'exampleapp',
+    # 'RuleFileReader'
 ]
 
 
@@ -140,3 +141,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 # Sentry
 SENTRY_DSN = config('SENTRY_DSN', default='')
 COMMIT_SHA = config('HEROKU_SLUG_COMMIT', default='')
+
+# RULES
+
+RULE_DIRS = [os.path.join(BASE_DIR, 'rulesTest')]

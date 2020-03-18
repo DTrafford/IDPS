@@ -98,7 +98,7 @@ class ids:
             seq = 0
             flags = []
             load = ''
-            alerts = None
+            alerts = []
 
             if TCP in packet:
                 src_port = packet[TCP].sport
@@ -130,7 +130,6 @@ class ids:
 
             newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq, alerts)
             packet_list[pckNum] = newPacket
-
 
             # for rule in ids.ruleList:
             #     # Check all rules

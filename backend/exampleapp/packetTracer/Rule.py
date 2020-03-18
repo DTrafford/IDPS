@@ -1,12 +1,20 @@
 from ipaddress import *
 from scapy.all import *
 
-from Utils import *
-from Action import *
-from Protocol import *
-from IPNetwork import *
-from Ports import *
-from PacketStrings import *
+from exampleapp.packetTracer.Utils import *
+# from Utils import *
+from exampleapp.packetTracer.Action import *
+# from Action import *
+from exampleapp.packetTracer.Protocol import *
+# from Protocol import *
+from exampleapp.packetTracer.IPNetwork import *
+# from IPNetwork import *
+from exampleapp.packetTracer.Ports import *
+# from Ports import *
+from exampleapp.packetTracer.PacketStrings import *
+# from PacketStrings import *
+
+from exampleapp.packetTracer.alert import Alert
 
 class Rule:
     """A NIDS rule."""
@@ -257,6 +265,71 @@ class Rule:
         msg += "By packet :\n" + packetString(pkt) + "\n"
 
         return msg
+
+    def createAlertObject(self, packet, pckNum, time):
+        """Create An Alter Object When Rule Triggered"""
+        newAlert = None
+
+        if packet.haslayer(IP):
+                protocols = {
+                    1: 'ICMP',
+                    4: 'IPv4',
+                    6: 'TCP',
+                    17: 'UDP',
+                    41: 'IPv6',
+                    56: 'TLSP',
+                    80: 'HTTP',
+                    84: 'TTP',
+                    88: 'EIGRP',
+                    143: 'ETHERNET',
+                    443: 'HTTPS'
+                }
+                flagsTCP = {
+                    'F': 'FIN',
+                    'S': 'SYN',
+                    'R': 'RST',
+                    'P': 'PSH',
+                    'A': 'ACK',
+                    'U': 'URG',
+                    'E': 'ECE',
+                    'C': 'CWR',
+                }
+                pckt_src = packet[IP].src
+                pckt_dst = packet[IP].dst
+                src_port = ''
+                dst_port = ''
+                protocol = ''
+                seq = 0
+                flags = []
+                load = ''
+                alerts = []
+
+
+                if TCP in packet:
+                    src_port = packet[TCP].sport
+                    dst_port = packet[TCP].dport
+                    seq = packet[TCP].seq
+                    ack = packet[TCP].ack if packet[TCP].ack else 0
+                    for flag in packet[TCP].flags:
+                        flags.append(flagsTCP[flag])
+
+                if UDP in packet:
+                    src_port = packet[UDP].sport
+                    dst_port = packet[UDP].dport
+
+                protocol = protocols[packet[IP].proto] if packet[IP].proto in protocols else ''
+
+        msg = ""
+        if (self.action == Action.ALERT):
+            msg += " ALERT "
+        if hasattr(self, "msg"):
+            msg += self.msg  + "\n"
+        
+        newAlert = Alert(pckNum, self.msg, str(self), pckt_src, src_port, pckt_dst, dst_port, time)
+        # msg += "Rule matched :\n" + str(self) + "\n"
+        # msg += "By packet :\n" + packetString(pkt) + "\n"
+
+        return newAlert
 
     def getMatchedPrintMessage(self, pkt):
         """Return the message to be printed in the console when the packet triggered the rule."""

@@ -1,8 +1,10 @@
 import re
 from scapy.all import *
 
-from Utils import *
-from Rule import *
+from exampleapp.packetTracer.Utils import *
+# from Utils import *
+from exampleapp.packetTracer.Rule import *
+# from Rule import *
 
 
 RED = '\033[91m'

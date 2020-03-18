@@ -1,64 +1,51 @@
 # from .packet import Packet
+import sys, os
+import logging
+
 import json
 import requests
 import urllib.request
 from datetime import datetime
+import time
 from scapy.layers.inet import *
 from scapy.all import *
-import sys
+import exampleapp.packetTracer.RuleFileReader as RuleFileReader
+from collections import OrderedDict
+from exampleapp.packetTracer.packet import Packet
+from exampleapp.packetTracer.Rule import Rule
+import time
+from datetime import datetime
+from scapy.layers.inet import UDP
 
 sys.path.append('../')
 
 
+pckNum = 0
+packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
 
-class Packet(object):
+# class Packet(object):
 
-    def __init__(self, srcIP, srcCity, srcCountry, srcContinent, dstIP, dstCity, dstCountry, dstContinent, time):
-        self. srcIP = srcIP
-        self.srcCity = srcCity
-        self.srcCountry = srcCountry
-        self.srcContinent = srcContinent
-        self.dstIP = dstIP
-        self.dstCity = dstCity
-        self.dstCountry = dstCountry
-        self.dstContinent = dstContinent
-        self.srcPort = ''
-        self.dstPort = ''
-        self.time = time
-        #self.ruleList = ruleList
+#     def __init__(self, pcktNumber, srcIP, dstIP, time, proto, srcPort, dstPort, flags, seq, alerts):
+#         self.pcktNumber = pcktNumber
+#         self.srcIP = srcIP
+#         self.dstIP = dstIP
+#         self.srcPort = srcPort
+#         self.dstPort = dstPort
+#         self.time = time
+#         self.protocol = proto
+#         self.flags = flags
+#         self.seq = seq
+#         self.alerts = alerts
 
-    def _addPorts(self, srcPort, dstPort):
-        self.srcPort = srcPort
-        self.dstPort = dstPort
+#     def to_dict(self):
+#         return {
+#             'num': self.pcktNumber,
+#             'srcIP': self.srcIP
+#         }
 
-    #def inPacket(self, pkt):
-    #    for rule in self.ruleList:
-    #        # Check all rules
-    #        # print "checking rule"
-    #        matched = rule.match(pkt)
-    #        if (matched):
-    #            logMessage = rule.getMatchedMessage(pkt)
-    #            logging.warning(logMessage)
-    #
-    #            print(rule.getMatchedPrintMessage(pkt))
-
-    def __str__(self):
-        return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
-        # print("IP Packet: %s (%s) ==>  %s (%s)" % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry), end=' ')
-
-
-""" 
-ALL AVAILABLE FIELDS FROM ipgeolcation.io result
-
-{'ip': '8.8.8.8', 'continent_code': 'NA', 'continent_name': 'North America', 'country_code2': 'US', 'country_code3': 'USA', 
-'country_name': 'United States', 'country_capital': 'Washington', 'state_prov': 'California', 'district': 'Santa Clara County', 
-'city': 'Mountain View', 'zipcode': '94041', 'latitude': '37.42290', 'longitude': '-122.08500', 'is_eu': False, 'calling_code': '+1', 
-'country_tld': '.us', 'languages': 'en-US,es-US,haw,fr', 'country_flag': 'https://ipgeolocation.io/static/flags/us_64.png', 
-'geoname_id': '5375480', 'isp': 'Level 3 Communications', 'connection_type': 'wired', 'organization': 'Google LLC', 
-'currency': {'code': 'USD', 'name': 'US Dollar', 'symbol': '$'}, 'time_zone': {'name': 'America/Los_Angeles', 'offset': -8, 
-'current_time': '2019-09-05 15:56:29.568-0700', 'current_time_unix': 1567724189.568, 'is_dst': True, 'dst_savings': 1}}
-"""
+#     def __str__(self):
+#         return ("(%d) IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, %s ||| ALERTS  = %s" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.alerts))
 
 class ids:
     __flagsTCP = {
@@ -78,103 +65,109 @@ class ids:
 
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
+
+    ruleList = []
+
+    import pathlib
+    basepath = str(pathlib.Path().absolute()) + '/exampleapp/packetTracer/rulesTest/'
+    # basepath = str(os.path.dirname) + '/rulesTest/'
+    print('BASE PATH = ' + str(basepath))
+
+    for entry in os.listdir(basepath):
+        ruleList, errorCount = RuleFileReader.read(basepath + entry);
+        print("\n\nRuleFiles = ", os.path.join(basepath))
+        print("\tFinished reading rule file: " + entry)
+
+        if (errorCount == 0):
+            print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
+        else:
+            print("\t" + str(len(ruleList)) + " rules have been correctly read:")
+            print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
+        print('RULE LIST = ', ruleList , "\n\n")
+
+
     def sniffPackets(self, consumer):
         print('IN SNIFF PACKETS')
         def nestedSniff(packet):
-            newPacket = {}
-            # print(packet.summary())
+            newPacket = None
+            global pckNum
+            pckNum += 1
+            srcMAC = packet[Ether].src
+            dstMAC = packet[Ether].dst
+
             print("running capturing thread")
             """ THIS wrpcap writes the pcap file, uncomment it if you wanna use it """
-            #wrpcap(ids.current_file, packet, append = True)
-            if packet.haslayer(ICMP):
-                consumer.send(text_data=json.dumps({
-                    'message': "IN ICMP"
-                }))
-                newPacket['srcIP'] = packet[IP].src
-                newPacket['dstIP'] = packet[IP].dst
-                # srcCountryFlag = ''
-                # srcContinent = ''
-                # srcCity = ''
-                # srcPort = ''
-                # dstCountry = ''
-                # dstCountryFlag = ''
-                # dstContinent = ''
-                # dstCity = ''
-                # dstPort = ''
-                newPacket['time'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                # newPacket = Packet(pckt_src, srcCity, srcCountry, srcContinent, pckt_dst, dstCity, dstCountry, dstContinent,
-                #                    time)
 
             if packet.haslayer(IP):
-                newPacket['srcIP'] = packet[IP].src
-                newPacket['dstIP'] = packet[IP].dst
-                srcCountry = ''
-                srcCountryFlag = ''
-                srcContinent = ''
-                srcCity = ''
-                srcPort = ''
-                dstCountry = ''
-                dstCountryFlag = ''
-                dstContinent = ''
-                dstCity = ''
-                dstPort = ''
-                """ To get the location of the source and destination ip addresses """
+                protocols = {
+                    1: 'ICMP',
+                    4: 'IPv4',
+                    6: 'TCP',
+                    17: 'UDP',
+                    41: 'IPv6',
+                    56: 'TLSP',
+                    80: 'HTTP',
+                    84: 'TTP',
+                    88: 'EIGRP',
+                    143: 'ETHERNET',
+                    443: 'HTTPS'
+                }
+                flagsTCP = {
+                    'F': 'FIN',
+                    'S': 'SYN',
+                    'R': 'RST',
+                    'P': 'PSH',
+                    'A': 'ACK',
+                    'U': 'URG',
+                    'E': 'ECE',
+                    'C': 'CWR',
+                }
+                pckt_src = packet[IP].src
+                pckt_dst = packet[IP].dst
+                src_port = ''
+                dst_port = ''
+                protocol = ''
+                seq = 0
+                flags = []
+                load = ''
+                alerts = []
 
-                src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(
-                    x=apikey, y=newPacket['srcIP'])
-                r = requests.get(src_location_api)
-                result = r.json()
-                # print(result)
-                if 'city' in result:
-                    newPacket['srcCountry'] = result['country_name']
-                    # srcCountryFlag = result['country_flag']
-                    # srcContinent = result['continent_name']
-                    # srcCity = result['city']
-                # else:
-                #     return
 
-                dst_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(
-                    x=apikey, y=newPacket['dstIP'])
-                r = requests.get(src_location_api)
-                result = r.json()
-                if 'city' in result:
-                    newPacket['dstCountry'] = result['country_name']
-                    # dstCountryFlag = result['country_flag']
-                    # dstContinent = result['continent_name']
-                    # dstCity = result['city']
+                if TCP in packet:
+                    src_port = packet[TCP].sport
+                    dst_port = packet[TCP].dport
+                    seq = packet[TCP].seq
+                    ack = packet[TCP].ack if packet[TCP].ack else 0
+                    for flag in packet[TCP].flags:
+                        flags.append(flagsTCP[flag])
 
-                #######################
-                # src_location_api = "https://www.iplocate.io/api/lookup/" + pckt_src
-                # dst_location_api = "https://www.iplocate.io/api/lookup/" + pckt_dst
-                # resp = urllib.request.urlopen(src_location_api)
-                # result = resp.read()
-                # result = json.loads(result.decode('utf-8'))
-                # srcCountry = result['country']
-                # srcContinent = result['continent']
-                # srcCity = result['city']
-                # resp = urllib.request.urlopen(dst_location_api)
-                # result = resp.read()
-                # result = json.loads(result.decode('utf-8'))
-                # dstCountry = result['country']
-                # dstContinent = result['continent']
-                # dstCity = result['city']
-                newPacket['time'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                # newPacket = Packet(pckt_src, srcCity, srcCountry, srcContinent, pckt_dst, dstCity, dstCountry, dstContinent, time)
-                # print("IP Packet: %s ==>  %s, %s" % (pckt_src, pckt_dst, str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))), end=' ')
+                if UDP in packet:
+                    src_port = packet[UDP].sport
+                    dst_port = packet[UDP].dport
 
-                # print(newPacket, end=' ')
+                protocol = protocols[packet[IP].proto] if packet[IP].proto in protocols else ''
+                load = packet[IP].load if Raw in packet else ''
 
-            if packet.haslayer(TCP):
-                newPacket['srcPort'] = packet.sport
-                newPacket['dstPort'] = packet.dport
-                jsonPacket = json.dumps(newPacket);
-                # print(newPacket)
+                time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                for rule in ids.ruleList:
+                    # Check all rules
+                    matched = rule.match(packet)
+                    # print('RULE = ' + str(rule) + "\n\n")
+                    if (matched):
+                        # print("Matched Rule: " + str(matched))
+                        logMessage = rule.getMatchedMessage(packet)
+                        logging.warning(logMessage)
+                        print("CREATING ALERT OBJECT -------", rule.createAlertObject(packet, pckNum, time))
+                        alerts.append(rule.createAlertObject(packet, pckNum, time).__dict__)
+                        # alerts.append(rule.getMatchedMessage(packet))
+                        # print(rule.getMatchedPrintMessage(packet) + "\n\n========================================================")
+
+                newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq, alerts)
+                packet_list[pckNum] = newPacket
+                print(newPacket)
                 consumer.send(text_data=json.dumps({
-                    'message': newPacket
+                    'message': newPacket.__dict__
                 }))
-                self.detect_TCPflood(packet, consumer)
-            else:
-                print()
 
         return nestedSniff
 

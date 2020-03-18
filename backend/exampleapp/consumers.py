@@ -24,6 +24,7 @@ class Sniffer:
             Sniffer.instance = Sniffer.__Sniffer(consumer)
         else:
             Sniffer.instance.consumer = consumer
+            
     def __getattr__(self, name):
         return getattr(self.instance, name)
 class IDPSConsumer(WebsocketConsumer):
@@ -71,6 +72,7 @@ class IDPSConsumer(WebsocketConsumer):
 
     def send_message(self, event):
         message = event['message']
+        print(message)
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({
