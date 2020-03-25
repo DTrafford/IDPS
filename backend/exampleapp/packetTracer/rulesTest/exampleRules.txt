@@ -19,3 +19,32 @@ alert ip any any -> any any (msg:"SURICATA Applayer Mismatch protocol both direc
 alert ip any any -> any any (msg:"SURICATA Applayer Wrong direction first Data"; flow:established; app-layer-event:applayer_wrong_direction_first_data; flowint:applayer.anomaly.count,+,1; classtype:protocol-command-decode; sid:2260001; rev:1;)
 alert dhcp any any -> any any (msg:"SURICATA DHCP malformed options"; app-layer-event:dhcp.malformed_options; classtype:protocol-command-decode; sid:2227000; rev:1;)
 alert dhcp any any -> any any (msg:"SURICATA DHCP truncated options"; app-layer-event:dhcp.truncated_options; classtype:protocol-command-decode; sid:2227001; rev:1;)
+
+#Remote Connection port blocking
+alert tcp any 3389 -> any any (msg:"Microsoft RDP Traffic")
+alert udp any 3389 -> any any (msg:"Microsoft RDP Traffic")
+alert tcp any any -> any 3389 (msg:"Microsoft RDP Traffic")
+alert udp any any -> any 3389 (msg:"Microsoft RDP Traffic")
+alert tcp any 5900 -> any any (msg:"VNC Traffic")
+alert tcp any any -> any 5900 (msg:"VNC Traffic")
+
+#Block Ping of Death DOS attack
+alert icmp any any -> any any (msg:"Ping of Death Detected"; dsize:>1000;)
+
+#Blocking for protocols often used by malicious actors
+alert tcp any 22:23 -> any any (msg:"SSH/Telnet Traffic")
+alert tcp any any -> any 22:23 (msg:"SSH/Telnet Traffic")
+alert tcp any 6881:6889 -> any any (msg:"BitTorrent Traffic")
+alert tcp any any -> any 6881:6889 (msg:"BitTorrent Traffic")
+
+#Country Wide network blocks
+alert tcp 175.45.176.0/22 any -> any any (msg:"North Korea Traffic")
+alert udp 175.45.176.0/22 any -> any any (msg:"North Korea Traffic")
+alert tcp any any -> 175.45.176.0/22 any (msg:"North Korea Traffic")
+alert udp any any -> 175.45.176.0/22 any (msg:"North Korea Traffic")
+
+#SMB file sharing ports (Vulnerable on un-updated systems)
+alert tcp any 445 -> any any (msg:"SMB Traffic")
+alert udp any 445 -> any any (msg:"SMB Traffic")
+alert tcp any any -> any 445 (msg:"SMB Traffic")
+alert udp any any -> any 445 (msg:"SMB Traffic")
