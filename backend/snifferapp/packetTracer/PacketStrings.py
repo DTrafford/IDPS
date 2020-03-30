@@ -1,9 +1,9 @@
 import re
 from scapy.all import *
 
-from exampleapp.packetTracer.Utils import *
+from snifferapp.packetTracer.Utils import *
 # from Utils import *
-from exampleapp.packetTracer.Rule import *
+from snifferapp.packetTracer.Rule import *
 # from Rule import *
 
 

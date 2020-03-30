@@ -40,11 +40,11 @@ class ids:
     ruleList = []
 
     import pathlib
-    basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
+    basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/snifferapp/packetTracer/rulesTest/'
     print('BASE PATH = ' + str(basepath))
 
     import pathlib
-    basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
+    basepath = str(pathlib.Path().absolute()) + '/backend/snifferapp/packetTracer/rulesTest/'
     print('BASE PATH = ' + str(basepath))
 
     for entry in os.listdir(basepath):

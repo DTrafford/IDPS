@@ -1,14 +1,14 @@
 """Functions for reading a file of rules."""
 
-from exampleapp.packetTracer.Action import *
+from snifferapp.packetTracer.Action import *
 # from Action import *
-from exampleapp.packetTracer.Protocol import *
+from snifferapp.packetTracer.Protocol import *
 # from Protocol import *
-from exampleapp.packetTracer.IPNetwork import *
+from snifferapp.packetTracer.IPNetwork import *
 # from IPNetwork import *
-from exampleapp.packetTracer.Ports import *
+from snifferapp.packetTracer.Ports import *
 # from Ports import *
-from exampleapp.packetTracer.Rule import *
+from snifferapp.packetTracer.Rule import *
 # from Rule import *
 
 def read(filename):

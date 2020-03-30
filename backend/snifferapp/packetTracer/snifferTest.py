@@ -2,10 +2,8 @@ import sys, os
 # sys.path.append('../')
 
 import glob
-from threading import Thread
-import logging
 
-from IPython.core.magic_arguments import magic_arguments
+
 from scapy.all import *
 from datetime import datetime
 import urllib.request
@@ -16,44 +14,30 @@ from parsuricata import parse_rules
 import RuleFileReader
 from collections import OrderedDict
 from packet import Packet
-from Rule import Rule
 
 import time
 from datetime import datetime
 
 # print("This file full path (following symlinks)")
-# path = os.path.realpath('./backend/exampleapp/packetTracer/rules/*.rules')
+# path = os.path.realpath('./backend/snifferapp/packetTracer/rules/*.rules')
 # print(path + "\n")
-from scapy.layers.inet import UDP
+rules = []
+# basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/snifferapp/packetTracer/rulesTest/'
+# print('OS .JOIN = ', os.path.join(basepath))
+import pathlib
+basepath = str(pathlib.Path().absolute()) + '/backend/snifferapp/packetTracer/rulesTest/'
+print('BASE PATH = ' + str(basepath))
+for entry in os.listdir(basepath):
+    rules.append(RuleFileReader.read(str(basepath) + entry));
+    # rules.append(parse_rules(entry))
+
+print('RULES = ', rules)
+# rules.append(RuleFileReader.read(filename));
 
 pckNum = 0
 # df = pd.DataFrame()
 packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
-
-# ruleList = []
-
-# import pathlib
-# basepath = str(pathlib.Path().absolute()) + '/backend/exampleapp/packetTracer/rulesTest/'
-# print('BASE PATH = ' + str(basepath))
-
-# for entry in os.listdir(basepath):
-#     # ruleList.append(RuleFileReader.read(basepath + entry));
-#     # ruleList.append(parse_rules(entry))
-#     # ruleList.append(RuleFileReader.read(filename));
-#     ruleList, errorCount = RuleFileReader.read(basepath + entry);
-#     print("\n\nRuleFiles = ", os.path.join(basepath))
-#     print("\tFinished reading rule file: " + entry)
-
-#     if (errorCount == 0):
-#         print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
-#     else:
-#         print("\t" + str(len(ruleList)) + " rules have been correctly read:")
-#         print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
-#         for x in ruleList:
-#             print(x)
-
-# print('RULE LIST = ', ruleList)
 class ids:
     __flagsTCP = {
         'F': 'FIN',
@@ -79,34 +63,11 @@ class ids:
 
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
-
-    ruleList = []
-
-    import pathlib
-    basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/exampleapp/packetTracer/rulesTest/'
-    print('BASE PATH = ' + str(basepath))
-
-    for entry in os.listdir(basepath):
-        # ruleList.append(RuleFileReader.read(basepath + entry));
-        # ruleList.append(parse_rules(entry))
-        # ruleList.append(RuleFileReader.read(filename));
-        ruleList, errorCount = RuleFileReader.read(basepath + entry);
-        print("\n\nRuleFiles = ", os.path.join(basepath))
-        print("\tFinished reading rule file: " + entry)
-
-        if (errorCount == 0):
-            print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
-        else:
-            print("\t" + str(len(ruleList)) + " rules have been correctly read:")
-            print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
-        print('RULE LIST = ', ruleList , "\n\n")
-
+    
     def sniffPackets(self, packet):
-        # global ruleList
-        #print("RULE LIST INSIDE SNIFF PACKETS = ", ids.ruleList)
         newPacket = None
         global pckNum
-        pckNum += 1
+        pckNum+=1
         srcMAC = packet[Ether].src
         dstMAC = packet[Ether].dst
         # print(srcMAC)
@@ -170,10 +131,10 @@ class ids:
 
             load = packet[IP].load if Raw in packet else ''
             # if Raw in packet:
-            # print('LOAD = ', load)
-            """ To get the location of the source and destination ip addresses """
             #     load = packet[IP].load
 
+                # print('LOAD = ', load)
+            """ To get the location of the source and destination ip addresses """
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
             # r = requests.get(src_location_api)
@@ -196,22 +157,9 @@ class ids:
 
             time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
-            packet_list[pckNum] = newPacket
 
-
-            for rule in ids.ruleList:
-                # Check all rules
-                matched = rule.match(packet)
-                print('RULE = ' + str(rule) + "\n\n")
-                if (matched):
-                    print ("Bool? = " + str(matched))
-                    print("Matched Rule: " + str(matched))
-                    logMessage = rule.getMatchedMessage(packet)
-                    logging.warning(logMessage)
-                    print(rule.getMatchedPrintMessage(packet) + "\n\n========================================================")
-
-
-                    # print('PACKET DETAILS = ', packet_list[pckNum])
+            packet_list[pckNum] = (newPacket)
+            # print('PACKET DETAILS = ', packet_list[pckNum])
             # if 'SYN' and 'ACK' in newPacket.flags:
             #     print('SYN & ACK PACKET')
             #     for i in range(pckNum, 0, -1):
@@ -223,6 +171,8 @@ class ids:
             # print('PACKET LIST = ', packet_list)
             # df.add(dfPacket)
             # print(df.head())
+
+
 
         # print('TEST 1  = ', newPacket)
         return newPacket
@@ -245,19 +195,16 @@ class ids:
     #                 dst = stream.split(':')[1]
     #                 print("Possible Flooding Attack from %s --> %s" % (src, dst))
 
-
 if __name__ == '__main__':
-
-
-    print("==Custom packet sniffer==")
-    ruleList = list()
-    sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
-    # sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids().sniffPackets)
-    #sniffer = AsyncSniffer(iface="Wi-Fi", prn=ids.inPacket,filter="", store=0, stop_filter=self.stopfilter)
+    print("custom packet sniffer ")
+    # sniff(filter="ip")
+    # sniff(iface="en0", prn=ids().sniffPackets)
+    sniffer = AsyncSniffer(iface="en0", prn=ids().sniffPackets)
     sniffer.start()
-
-    #print("__________________________________________________________________________________________________________")
-    #print("     |        Src and Dest IP         |         Time:       | Protocol |      Port     |     Flags        | Sequence")
     time.sleep(5)
-    print("\n\n==Stopping custom sniffer==")
+    print("Stopping sniffer")
     sniffer.stop()
+
+
+
+

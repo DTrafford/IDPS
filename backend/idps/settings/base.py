@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'import_export',
     'common',
     'users',
-    'exampleapp',
+    'snifferapp',
     # 'RuleFileReader'
 ]
 

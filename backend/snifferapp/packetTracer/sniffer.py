@@ -9,10 +9,10 @@ from datetime import datetime
 import time
 from scapy.layers.inet import *
 from scapy.all import *
-import exampleapp.packetTracer.RuleFileReader as RuleFileReader
+import snifferapp.packetTracer.RuleFileReader as RuleFileReader
 from collections import OrderedDict
-from exampleapp.packetTracer.packet import Packet
-from exampleapp.packetTracer.Rule import Rule
+from snifferapp.packetTracer.packet import Packet
+from snifferapp.packetTracer.Rule import Rule
 import time
 from datetime import datetime
 from scapy.layers.inet import UDP
@@ -69,7 +69,7 @@ class ids:
     ruleList = []
 
     import pathlib
-    basepath = str(pathlib.Path().absolute()) + '/exampleapp/packetTracer/rulesTest/'
+    basepath = str(pathlib.Path().absolute()) + '/snifferapp/packetTracer/rulesTest/'
     # basepath = str(os.path.dirname) + '/rulesTest/'
     print('BASE PATH = ' + str(basepath))
 

@@ -1,20 +1,20 @@
 from ipaddress import *
 from scapy.all import *
 
-from exampleapp.packetTracer.Utils import *
+from snifferapp.packetTracer.Utils import *
 # from Utils import *
-from exampleapp.packetTracer.Action import *
+from snifferapp.packetTracer.Action import *
 # from Action import *
-from exampleapp.packetTracer.Protocol import *
+from snifferapp.packetTracer.Protocol import *
 # from Protocol import *
-from exampleapp.packetTracer.IPNetwork import *
+from snifferapp.packetTracer.IPNetwork import *
 # from IPNetwork import *
-from exampleapp.packetTracer.Ports import *
+from snifferapp.packetTracer.Ports import *
 # from Ports import *
-from exampleapp.packetTracer.PacketStrings import *
+from snifferapp.packetTracer.PacketStrings import *
 # from PacketStrings import *
 
-from exampleapp.packetTracer.alert import Alert
+from snifferapp.packetTracer.alert import Alert
 
 class Rule:
     """A NIDS rule."""
