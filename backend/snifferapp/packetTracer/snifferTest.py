@@ -1,8 +1,7 @@
-import sys, os
-# sys.path.append('../')
+import sys
+import os
 
 import glob
-
 
 from scapy.all import *
 from datetime import datetime
@@ -17,27 +16,21 @@ from packet import Packet
 
 import time
 from datetime import datetime
-
-# print("This file full path (following symlinks)")
-# path = os.path.realpath('./backend/snifferapp/packetTracer/rules/*.rules')
-# print(path + "\n")
-rules = []
-# basepath = 'X:/CyberSecurity/CBER710-Capsone Project/Capstone Project/IDPS/backend/snifferapp/packetTracer/rulesTest/'
-# print('OS .JOIN = ', os.path.join(basepath))
 import pathlib
-basepath = str(pathlib.Path().absolute()) + '/backend/snifferapp/packetTracer/rulesTest/'
+
+rules = []
+
+basepath = str(pathlib.Path().absolute()) + \
+    '/backend/snifferapp/packetTracer/rulesTest/'
 print('BASE PATH = ' + str(basepath))
 for entry in os.listdir(basepath):
-    rules.append(RuleFileReader.read(str(basepath) + entry));
-    # rules.append(parse_rules(entry))
-
-print('RULES = ', rules)
-# rules.append(RuleFileReader.read(filename));
+    rules.append(RuleFileReader.read(str(basepath) + entry))
 
 pckNum = 0
-# df = pd.DataFrame()
 packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
+
+
 class ids:
     __flagsTCP = {
         'F': 'FIN',
@@ -49,13 +42,6 @@ class ids:
         'E': 'ECE',
         'C': 'CWR',
     }
-    # __protocols = {
-    #     1: 'ICMP',
-    #     4: 'IPv4',
-    #     6: 'TCP',
-    #     17: 'UDP',
-    #     41: 'IPv6'
-    # }
 
     __ip_cnt_TCP = {}  # ip address requests counter
 
@@ -63,18 +49,13 @@ class ids:
 
     now = datetime.now()
     current_file = 'captured_pkts' + str(now) + '.pcap'
-    
+
     def sniffPackets(self, packet):
         newPacket = None
         global pckNum
-        pckNum+=1
+        pckNum += 1
         srcMAC = packet[Ether].src
         dstMAC = packet[Ether].dst
-        # print(srcMAC)
-        # print(packet)
-        # df.append(packet)
-        # dh.head()
-        # print(packet.sprintf("Source IP: %IP.src% () ==> Dest IP: %IP.dst% (), Proto: %IP.proto%, Flags: %TCP.flags%").upper())
 
         if packet.haslayer(IP):
             protocols = {
@@ -114,10 +95,7 @@ class ids:
                 dst_port = packet[TCP].dport
                 seq = packet[TCP].seq
                 ack = packet[TCP].ack if packet[TCP].ack else 0
-                # print('({}) TCP PAYLOAD = {}'.format(pckNum, packet[TCP].payload))
-                # print('({}) TCP PAYLOAD LENGTH = {}'.format(pckNum, len(packet[TCP].payload)))
-                # ack = packet[TCP].ack
-                # print(ack)
+
                 for flag in packet[TCP].flags:
                     flags.append(flagsTCP[flag])
 
@@ -126,14 +104,9 @@ class ids:
                 dst_port = packet[UDP].dport
 
             protocol = protocols[packet[IP].proto] if packet[IP].proto in protocols else ''
-            # if packet[IP].proto in protocols:
-            #     protocol = protocols[packet[IP].proto]
 
             load = packet[IP].load if Raw in packet else ''
-            # if Raw in packet:
-            #     load = packet[IP].load
 
-                # print('LOAD = ', load)
             """ To get the location of the source and destination ip addresses """
 
             # src_location_api = 'https://api.ipgeolocation.io/ipgeo?apiKey={x}&ip={y}'.format(x=apikey, y=pckt_src)
@@ -156,25 +129,11 @@ class ids:
             #     dstCity = result['city']
 
             time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq)
+            newPacket = Packet(pckNum, pckt_src, pckt_dst,
+                               time, protocol, src_port, dst_port, flags, seq)
 
             packet_list[pckNum] = (newPacket)
-            # print('PACKET DETAILS = ', packet_list[pckNum])
-            # if 'SYN' and 'ACK' in newPacket.flags:
-            #     print('SYN & ACK PACKET')
-            #     for i in range(pckNum, 0, -1):
-            #         print(i)
 
-            # for obj in packet_list.values():
-            #    if obj.srcIP == newPacket.srcIP:
-            #        print('matched')
-            # print('PACKET LIST = ', packet_list)
-            # df.add(dfPacket)
-            # print(df.head())
-
-
-
-        # print('TEST 1  = ', newPacket)
         return newPacket
 
     # def detect_TCPflood(self, packet):
@@ -195,16 +154,12 @@ class ids:
     #                 dst = stream.split(':')[1]
     #                 print("Possible Flooding Attack from %s --> %s" % (src, dst))
 
+
 if __name__ == '__main__':
     print("custom packet sniffer ")
-    # sniff(filter="ip")
-    # sniff(iface="en0", prn=ids().sniffPackets)
     sniffer = AsyncSniffer(iface="en0", prn=ids().sniffPackets)
     sniffer.start()
     time.sleep(5)
     print("Stopping sniffer")
     sniffer.stop()
-
-
-
 

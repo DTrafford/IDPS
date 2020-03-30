@@ -18,10 +18,6 @@ class Packet(object):
         # self.dstCountry = dstCountry
         # self.dstContinent = dstContinent
 
-    # def _addPorts(self, srcPort, dstPort):
-    #     self.srcPort = srcPort
-    #     self.dstPort = dstPort
-
     def to_dict(self):
         return {
             'num': self.pcktNumber,
@@ -30,12 +26,6 @@ class Packet(object):
 
     def __str__(self):
         return ("(%d) IP Packet: %s ==>  %s, Time: %s, Protocol: %s, Port: %s --> %s, %s ||| ALERTS  = %s" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.alerts))
-
-        #return ("'{0: <5}.format(%d)' | %s ==> %s | %s | %s | %s --> %s | %s | %d" % (self.pcktNumber, self.srcIP, self.dstIP, self.time, self.protocol, self.srcPort, self.dstPort, self.flags, self.seq))
-
-
-        # return ("IP Packet: %s (%s) ==>  %s (%s), Time: %s, Port: %s --> %s, " % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry, self.time, self.srcPort, self.dstPort))
-        # print("IP Packet: %s (%s) ==>  %s (%s)" % (self.srcIP, self.srcCountry, self.dstIP, self.dstCountry), end=' ')
 
 
 """ 

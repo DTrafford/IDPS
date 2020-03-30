@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 import logging
 
 from scapy.all import *
@@ -17,6 +18,7 @@ from scapy.layers.inet import UDP
 pckNum = 0
 packet_list = OrderedDict()
 apikey = '79aa5e1eed184359a87119a5a9dace18'
+
 
 class ids:
     __flagsTCP = {
@@ -44,20 +46,24 @@ class ids:
     print('BASE PATH = ' + str(basepath))
 
     import pathlib
-    basepath = str(pathlib.Path().absolute()) + '/backend/snifferapp/packetTracer/rulesTest/'
+    basepath = str(pathlib.Path().absolute()) + \
+        '/backend/snifferapp/packetTracer/rulesTest/'
     print('BASE PATH = ' + str(basepath))
 
     for entry in os.listdir(basepath):
-        ruleList, errorCount = RuleFileReader.read(basepath + entry);
+        ruleList, errorCount = RuleFileReader.read(basepath + entry)
         print("\n\nRuleFiles = ", os.path.join(basepath))
         print("\tFinished reading rule file: " + entry)
 
         if (errorCount == 0):
-            print("All (" + str(len(ruleList)) + ") rule/s have been correctly read.")
+            print("All (" + str(len(ruleList)) +
+                  ") rule/s have been correctly read.")
         else:
-            print("\t" + str(len(ruleList)) + " rules have been correctly read:")
-            print("\t" + str(errorCount) + " rules have errors and could not be read.\n\n")
-        print('RULE LIST = ', ruleList , "\n\n")
+            print("\t" + str(len(ruleList)) +
+                  " rules have been correctly read:")
+            print("\t" + str(errorCount) +
+                  " rules have errors and could not be read.\n\n")
+        print('RULE LIST = ', ruleList, "\n\n")
 
     def sniffPackets(self, packet):
         newPacket = None
@@ -119,34 +125,23 @@ class ids:
             for rule in ids.ruleList:
                 # Check all rules
                 matched = rule.match(packet)
-                # print('RULE = ' + str(rule) + "\n\n")
                 if (matched):
-                    print ("Bool? = " + str(matched))
+                    print("Bool? = " + str(matched))
                     print("Matched Rule: " + str(matched))
                     logMessage = rule.getMatchedMessage(packet)
                     logging.warning(logMessage)
                     alerts.append(rule.getMatchedMessage(packet))
-                    print(rule.getMatchedPrintMessage(packet) + "\n\n========================================================")
+                    print(rule.getMatchedPrintMessage(
+                        packet) + "\n\n========================================================")
 
-            newPacket = Packet(pckNum, pckt_src, pckt_dst, time, protocol, src_port, dst_port, flags, seq, alerts)
+            newPacket = Packet(pckNum, pckt_src, pckt_dst, time,
+                               protocol, src_port, dst_port, flags, seq, alerts)
             packet_list[pckNum] = newPacket
-
-            # for rule in ids.ruleList:
-            #     # Check all rules
-            #     matched = rule.match(packet)
-            #     # print('RULE = ' + str(rule) + "\n\n")
-            #     if (matched):
-            #         print ("Bool? = " + str(matched))
-            #         print("Matched Rule: " + str(matched))
-            #         logMessage = rule.getMatchedMessage(packet)
-            #         logging.warning(logMessage)
-            #         alerts.append(rule.getMatchedMessage(packet))
-            #         print(rule.getMatchedPrintMessage(packet) + "\n\n========================================================")
 
         return newPacket
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     print("==Custom packet sniffer==")
     ruleList = list()
